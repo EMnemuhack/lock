@@ -35,6 +35,8 @@
 #define ADV_CONFIG_FLAG                           (1 << 0)
 #define SCAN_RSP_CONFIG_FLAG                      (1 << 1)
 
+static bool key_status = false;
+
 static uint8_t adv_config_done = 0;
 
 static uint16_t heart_rate_handle_table[HRS_IDX_NB];
@@ -272,7 +274,6 @@ static void show_bonded_devices(void)
             printf("Turning off the LED\n");
             /*gpio_set_level(23, 0);
             vTaskDelay(1000 / portTICK_PERIOD_MS);*/
-            pwm_servo(true);
             
     for (int i = 0; i < dev_num; i++) {
         esp_log_buffer_hex(GATTS_TABLE_TAG, (void *)dev_list[i].bd_addr, sizeof(esp_bd_addr_t));
@@ -380,9 +381,13 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
         ESP_LOGI(GATTS_TABLE_TAG, "address type = %d", param->ble_security.auth_cmpl.addr_type);
         ESP_LOGI(GATTS_TABLE_TAG, "pair status = %s",param->ble_security.auth_cmpl.success ? "success" : "fail");
         if(!param->ble_security.auth_cmpl.success) {
+            //ベアリング失敗
             ESP_LOGI(GATTS_TABLE_TAG, "fail reason = 0x%x",param->ble_security.auth_cmpl.fail_reason);
         } else {
+            //ベアリング成功
             ESP_LOGI(GATTS_TABLE_TAG, "auth mode = %s",esp_auth_req_to_str(param->ble_security.auth_cmpl.auth_mode));
+            pwm_servo(true);
+            key_status = true;
         }
         show_bonded_devices();
         break;
@@ -396,6 +401,7 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
         break;
     }
     case ESP_GAP_BLE_SET_LOCAL_PRIVACY_COMPLETE_EVT:
+        printf("ローカルプライバシーセットコンプリート\n");
         if (param->local_privacy_cmpl.status != ESP_BT_STATUS_SUCCESS){
             ESP_LOGE(GATTS_TABLE_TAG, "config local privacy failed, error status = %x", param->local_privacy_cmpl.status);
             break;
@@ -473,8 +479,10 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event,
             printf("Turning on the LED\n");
             /*gpio_set_level(23, 1);
             vTaskDelay(1000 / portTICK_PERIOD_MS);*/
-
-            pwm_servo(false);
+            if(key_status){
+                pwm_servo(false);
+                key_status = false;
+            }
             /* start advertising again when missing the connect */
             esp_ble_gap_start_advertising(&heart_rate_adv_params);
             break;
@@ -513,7 +521,6 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event,
     }
 
         default:
-        printf("上記イベント以外[%x]\n",event);
            break;
     }
 }

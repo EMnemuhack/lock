@@ -20,17 +20,22 @@
 #include "freertos/queue.h"
 #include "esp_log.h"
 
-
-//定義
-#include "env.h"
-
-//チャタリング対策
+//ボタンモジュール
 #include "button.c"
 
 //サーボモータ動作モジュール
 #include "servo.c"
 
+//BLEモジュール
 #include "example_ble_sec_gatts_demo.c"
+
+//INPUT_GPIO_PIN
+#define CONFIG_INPUT_PIN1 16
+#define CONFIG_INPUT_PIN2 17
+
+//OUTPUT_GPIO_PIN
+#define CONFIG_OUTPUT_PIN 23
+
 
 //GPIO取得の時に追加
 /*#define GPIO_INPUT_IO_0     16
@@ -43,7 +48,7 @@
 //void IRAM_ATTR button_isr_handler(void *);
 
 // ハンドラ型の変数？
-TaskHandle_t ISR = NULL;
+//TaskHandle_t ISR = NULL;
 
 void app_main()
 {
