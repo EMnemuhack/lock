@@ -12,13 +12,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
-#include "driver/gpio.h"
 #include "sdkconfig.h"
-
-//LED_API時に追加
-#include "driver/ledc.h"
-#include "freertos/queue.h"
-#include "esp_log.h"
 
 //ボタンモジュール
 #include "button.c"
@@ -29,12 +23,16 @@
 //BLEモジュール
 #include "example_ble_sec_gatts_demo.c"
 
+//#include "wifi.c"
+
 //INPUT_GPIO_PIN
 #define CONFIG_INPUT_PIN1 16
 #define CONFIG_INPUT_PIN2 17
 
 //OUTPUT_GPIO_PIN
 #define CONFIG_OUTPUT_PIN 23
+
+//const char key[] = {"b41-flxEASHLOyhhsgpN0L"};
 
 
 //GPIO取得の時に追加
@@ -57,6 +55,8 @@ void app_main()
 	QueueHandle_t button_events = button_init(PIN_BIT(CONFIG_INPUT_PIN1) | PIN_BIT(CONFIG_INPUT_PIN2));
 	ble_init();
 
+	//ifttt_maker_init(key);
+
 	int cnt = 0;
 	bool led_status = false;
 
@@ -70,9 +70,11 @@ void app_main()
 				led_status = !(led_status);
 				cnt++;
 				printf("ボタンが%d回押されました\n",cnt);
-				pwm_servo(led_status);
+				//pwm_servo(led_status);
 				//xTaskCreate(&task_servoSweep, "task_servoSweep", 2048, NULL, 9,NULL);
 				printf("servo sweep task  started\n");
+
+				//wifi_set();
 			}
 			if ((ev.pin == CONFIG_INPUT_PIN2) && (ev.event == BUTTON_DOWN)) {
 				// ...

@@ -1,6 +1,5 @@
 /*
    This example code is in the Public Domain (or CC0 licensed, at your option.)
-
    Unless required by applicable law or agreed to in writing, this
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +19,9 @@
 #include "esp_gatts_api.h"
 #include "esp_bt_defs.h"
 #include "esp_bt_main.h"
+
 #include "example_ble_sec_gatts_demo.h"
+#include "wifi.c"
 
 #define GATTS_TABLE_TAG "SEC_GATTS_DEMO"
 
@@ -108,80 +109,6 @@ static struct gatts_profile_inst heart_rate_profile_tab[HEART_PROFILE_NUM] = {
 
 };
 
-/*
- *  Heart Rate PROFILE ATTRIBUTES
- ****************************************************************************************
- */
-/*
-/// Heart Rate Sensor Service
-static const uint16_t heart_rate_svc = ESP_GATT_UUID_HEART_RATE_SVC;
-
-#define CHAR_DECLARATION_SIZE   (sizeof(uint8_t))
-static const uint16_t primary_service_uuid = ESP_GATT_UUID_PRI_SERVICE;
-static const uint16_t character_declaration_uuid = ESP_GATT_UUID_CHAR_DECLARE;
-static const uint16_t character_client_config_uuid = ESP_GATT_UUID_CHAR_CLIENT_CONFIG;
-static const uint8_t char_prop_notify = ESP_GATT_CHAR_PROP_BIT_NOTIFY;
-static const uint8_t char_prop_read = ESP_GATT_CHAR_PROP_BIT_READ;
-static const uint8_t char_prop_read_write = ESP_GATT_CHAR_PROP_BIT_WRITE|ESP_GATT_CHAR_PROP_BIT_READ;
-
-/// Heart Rate Sensor Service - Heart Rate Measurement Characteristic, notify
-static const uint16_t heart_rate_meas_uuid = ESP_GATT_HEART_RATE_MEAS;
-static const uint8_t heart_measurement_ccc[2] ={ 0x00, 0x00};
-
-
-/// Heart Rate Sensor Service -Body Sensor Location characteristic, read
-static const uint16_t body_sensor_location_uuid = ESP_GATT_BODY_SENSOR_LOCATION;
-static const uint8_t body_sensor_loc_val[1] = {0x00};
-
-
-/// Heart Rate Sensor Service - Heart Rate Control Point characteristic, write&read
-static const uint16_t heart_rate_ctrl_point = ESP_GATT_HEART_RATE_CNTL_POINT;
-static const uint8_t heart_ctrl_point[1] = {0x00};
-
-/// Full HRS Database Description - Used to add attributes into the database
-static const esp_gatts_attr_db_t heart_rate_gatt_db[HRS_IDX_NB] =
-{
-    // Heart Rate Service Declaration
-    [HRS_IDX_SVC]                    =
-    {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&primary_service_uuid, ESP_GATT_PERM_READ,
-      sizeof(uint16_t), sizeof(heart_rate_svc), (uint8_t *)&heart_rate_svc}},
-
-    // Heart Rate Measurement Characteristic Declaration
-    [HRS_IDX_HR_MEAS_CHAR]            =
-    {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_declaration_uuid, ESP_GATT_PERM_READ,
-      CHAR_DECLARATION_SIZE,CHAR_DECLARATION_SIZE, (uint8_t *)&char_prop_notify}},
-
-    // Heart Rate Measurement Characteristic Value
-    [HRS_IDX_HR_MEAS_VAL]             =
-    {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&heart_rate_meas_uuid, ESP_GATT_PERM_READ,
-      HRPS_HT_MEAS_MAX_LEN,0, NULL}},
-
-    // Heart Rate Measurement Characteristic - Client Characteristic Configuration Descriptor
-    [HRS_IDX_HR_MEAS_NTF_CFG]        =
-    {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_client_config_uuid, ESP_GATT_PERM_READ|ESP_GATT_PERM_WRITE,
-      sizeof(uint16_t),sizeof(heart_measurement_ccc), (uint8_t *)heart_measurement_ccc}},
-
-    // Body Sensor Location Characteristic Declaration
-    [HRS_IDX_BOBY_SENSOR_LOC_CHAR]  =
-    {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_declaration_uuid, ESP_GATT_PERM_READ,
-      CHAR_DECLARATION_SIZE,CHAR_DECLARATION_SIZE, (uint8_t *)&char_prop_read}},
-
-    // Body Sensor Location Characteristic Value
-    [HRS_IDX_BOBY_SENSOR_LOC_VAL]   =
-    {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&body_sensor_location_uuid, ESP_GATT_PERM_READ_ENCRYPTED,
-      sizeof(uint8_t), sizeof(body_sensor_loc_val), (uint8_t *)body_sensor_loc_val}},
-
-    // Heart Rate Control Point Characteristic Declaration
-    [HRS_IDX_HR_CTNL_PT_CHAR]          =
-    {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&character_declaration_uuid, ESP_GATT_PERM_READ,
-      CHAR_DECLARATION_SIZE,CHAR_DECLARATION_SIZE, (uint8_t *)&char_prop_read_write}},
-
-    // Heart Rate Control Point Characteristic Value
-    [HRS_IDX_HR_CTNL_PT_VAL]             =
-    {{ESP_GATT_AUTO_RSP}, {ESP_UUID_LEN_16, (uint8_t *)&heart_rate_ctrl_point, ESP_GATT_PERM_WRITE_ENCRYPTED|ESP_GATT_PERM_READ_ENCRYPTED,
-      sizeof(uint8_t), sizeof(heart_ctrl_point), (uint8_t *)heart_ctrl_point}},
-};*/
-
 static char *esp_key_type_to_str(esp_ble_key_type_t key_type)
 {
    char *key_str = NULL;
@@ -267,13 +194,6 @@ static void show_bonded_devices(void)
     ESP_LOGI(GATTS_TABLE_TAG, "Bonded devices number : %d\n", dev_num);
 
     ESP_LOGI(GATTS_TABLE_TAG, "Bonded devices list : %d\n", dev_num);
-            //gpio_pad_select_gpio(23);
-            /* Set the GPIO as a push/pull output */
-           // gpio_set_direction(23, GPIO_MODE_OUTPUT);
-            /* Blink off (output low) */
-            printf("Turning off the LED\n");
-            /*gpio_set_level(23, 0);
-            vTaskDelay(1000 / portTICK_PERIOD_MS);*/
             
     for (int i = 0; i < dev_num; i++) {
         esp_log_buffer_hex(GATTS_TABLE_TAG, (void *)dev_list[i].bd_addr, sizeof(esp_bd_addr_t));
@@ -386,8 +306,9 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
         } else {
             //ベアリング成功
             ESP_LOGI(GATTS_TABLE_TAG, "auth mode = %s",esp_auth_req_to_str(param->ble_security.auth_cmpl.auth_mode));
-            pwm_servo(true);
             key_status = true;
+            pwm_servo(key_status);
+            wifi_set();   
         }
         show_bonded_devices();
         break;
@@ -401,7 +322,6 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
         break;
     }
     case ESP_GAP_BLE_SET_LOCAL_PRIVACY_COMPLETE_EVT:
-        printf("ローカルプライバシーセットコンプリート\n");
         if (param->local_privacy_cmpl.status != ESP_BT_STATUS_SUCCESS){
             ESP_LOGE(GATTS_TABLE_TAG, "config local privacy failed, error status = %x", param->local_privacy_cmpl.status);
             break;
@@ -480,8 +400,9 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event,
             /*gpio_set_level(23, 1);
             vTaskDelay(1000 / portTICK_PERIOD_MS);*/
             if(key_status){
-                pwm_servo(false);
                 key_status = false;
+                pwm_servo(key_status);
+                wifi_Disconect();
             }
             /* start advertising again when missing the connect */
             esp_ble_gap_start_advertising(&heart_rate_adv_params);

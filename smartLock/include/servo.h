@@ -8,5 +8,4 @@
 
 
 //関数定義
-void task_servoSweep(void);
 void pwm_servo(bool);
