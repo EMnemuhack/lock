@@ -18,8 +18,8 @@
 static const char *EXA = "example";
 // You can get these value from the datasheet of servo you use, in general pulse width varies between 1000 to 2000 mocrosecond
 #define SERVO_MIN_PULSEWIDTH_US (625) // Minimum pulse width in microsecond
-#define SERVO_MAX_PULSEWIDTH_US (2500) // Maximum pulse width in microsecond
-#define SERVO_MAX_DEGREE        (90)   // Maximum angle in degree upto which servo can rotate
+#define SERVO_MAX_PULSEWIDTH_US (1500) // Maximum pulse width in microsecond
+#define SERVO_MAX_DEGREE        (45)   // Maximum angle in degree upto which servo can rotate
 
 #define SERVO_PULSE_GPIO        (23)   // GPIO connects to the PWM signal line
 

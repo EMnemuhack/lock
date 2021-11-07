@@ -22,6 +22,7 @@
 
 #include "example_ble_sec_gatts_demo.h"
 #include "wifi.c"
+#include "esp32_ifttt_maker.c"
 
 #define GATTS_TABLE_TAG "SEC_GATTS_DEMO"
 
@@ -37,6 +38,8 @@
 #define SCAN_RSP_CONFIG_FLAG                      (1 << 1)
 
 static bool key_status = false;
+
+const char key[] = {"b41-flxEASHLOyhhsgpN0L"};
 
 static uint8_t adv_config_done = 0;
 
@@ -306,9 +309,19 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
         } else {
             //ベアリング成功
             ESP_LOGI(GATTS_TABLE_TAG, "auth mode = %s",esp_auth_req_to_str(param->ble_security.auth_cmpl.auth_mode));
+            /* Set the GPIO as a push/pull output */
+            gpio_set_direction(GPIO_NUM_16, GPIO_MODE_OUTPUT);
+        	gpio_set_level(GPIO_NUM_16, 1);
+            vTaskDelay(50/ portTICK_PERIOD_MS);
+
             key_status = true;
             pwm_servo(key_status);
-            wifi_set();   
+            gpio_set_level(GPIO_NUM_16, 0);
+            wifi_set();
+            
+
+            ifttt_maker_init(key);
+            ifttt_maker_trigger("smart_lock");
         }
         show_bonded_devices();
         break;
@@ -400,9 +413,11 @@ static void gatts_profile_event_handler(esp_gatts_cb_event_t event,
             /*gpio_set_level(23, 1);
             vTaskDelay(1000 / portTICK_PERIOD_MS);*/
             if(key_status){
+                gpio_set_level(GPIO_NUM_16, 1);
                 key_status = false;
                 pwm_servo(key_status);
-                wifi_Disconect();
+                gpio_set_level(GPIO_NUM_16, 0);
+                vTaskDelay(50/ portTICK_PERIOD_MS);
             }
             /* start advertising again when missing the connect */
             esp_ble_gap_start_advertising(&heart_rate_adv_params);

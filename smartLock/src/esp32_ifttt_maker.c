@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define IFTTT_MAKER_DEBUG_ON
 // Maker private key
 char* _key;
 

@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"name": "211107-135514-espidf-blink",
+			"path": "..\\..\\..\\..\\..\\..\\..\\Documents\\PlatformIO\\Projects\\211107-135514-espidf-blink"
+		},
+		{
+			"name": "211108-040002-espidf-http-request",
+			"path": "..\\..\\..\\..\\..\\..\\..\\Documents\\PlatformIO\\Projects\\211108-040002-espidf-http-request"
+		}
+	],
+	"settings": {}
+}

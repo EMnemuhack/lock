@@ -8,8 +8,12 @@
 #include "esp_log.h"
 #include "nvs_flash.h"
 
-#define WIFI_SSID "iPhone"
-#define WIFI_PASS "mwxn2izjehdzi"
+//工藤さんのwifi
+/*#define WIFI_SSID "iPhone"
+#define WIFI_PASS "mwxn2izjehdzi"*/
+
+#define WIFI_SSID "aterm-372239-a"
+#define WIFI_PASS "58d8a5b77ca5c"
 
 
 // Event group

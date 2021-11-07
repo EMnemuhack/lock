@@ -48,19 +48,24 @@
 // ハンドラ型の変数？
 //TaskHandle_t ISR = NULL;
 
+
+
 void app_main()
 {
 
-	button_event_t ev;
-	QueueHandle_t button_events = button_init(PIN_BIT(CONFIG_INPUT_PIN1) | PIN_BIT(CONFIG_INPUT_PIN2));
-	ble_init();
+	//button_event_t ev;
+	//QueueHandle_t button_events = button_init(PIN_BIT(CONFIG_INPUT_PIN1) | PIN_BIT(CONFIG_INPUT_PIN2));
+	
 
 	//ifttt_maker_init(key);
 
 	int cnt = 0;
 	bool led_status = false;
 
-	while (true) {
+	
+	ble_init();
+
+	/*while (true) {
 		if (xQueueReceive(button_events, &ev, 1000/portTICK_PERIOD_MS)) {
 
 			if ((ev.pin == CONFIG_INPUT_PIN1) && (ev.event == BUTTON_DOWN)) {
@@ -80,5 +85,5 @@ void app_main()
 				// ...
 			}
 		}
-	}
+	}*/
 }
